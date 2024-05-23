@@ -1,0 +1,1 @@
+default_app_config = 'calcrule_contribution_comores.apps.CalcruleContributionComoresConfig'
