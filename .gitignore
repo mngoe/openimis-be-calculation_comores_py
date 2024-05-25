@@ -1,0 +1,17 @@
+**/.vscode
+**/.idea
+**/venv
+**/.env
+**/__pycache__
+modules-requirements.txt
+modules-tests.sh
+**/.coverage
+**/coverage.xml
+**/coverage
+**/*.log
+**/*.log.*
+**/*.mo
+openIMIS/locale/en/LC_MESSAGES/django.mo
+**/staticfiles
+extracted_translations_fe
+build/**
