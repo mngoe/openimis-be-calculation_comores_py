@@ -7,13 +7,12 @@ from contribution_plan.models import ContributionPlanBundleDetails
 from core.signals import Signal
 from core import datetime
 from django.contrib.contenttypes.models import ContentType
-from policyholder.models import PolicyHolderInsuree
 
 
 class ContributionPlanCalculationRuleComores(AbsCalculationRule):
     version = 1
     uuid = "2e999dd4-04a0-2ba6-ac47-2a91cfa5e9b7"
-    calculation_rule_name = "CV: percent of income, comores"
+    calculation_rule_name = "Contribution paamg"
     description = DESCRIPTION_CONTRIBUTION_VALUATION
     impacted_class_parameter = CLASS_RULE_PARAM_VALIDATION
     date_valid_from = datetime.datetime(2000, 1, 1)
@@ -35,7 +34,6 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
         now = datetime.datetime.now()
         condition_is_valid = (now >= cls.date_valid_from and now <= cls.date_valid_to) \
             if cls.date_valid_to else (now >= cls.date_valid_from and cls.date_valid_to is None)
-        print("condition_is_valid ", condition_is_valid)
         if condition_is_valid:
             if cls.status == "active":
                 # register signals getParameter to getParameter signal and getLinkedClass ot getLinkedClass signal
@@ -47,8 +45,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
 
     @classmethod
     def active_for_object(cls, instance, context, type='account_receivable', sub_type='contribution'):
-        print("instance.__class__.__name__  ", instance.__class__.__name__)
-        return instance.__class__.__name__ == "ContractContributionPlanDetails" \
+        return instance.__class__.__name__ == "ContributionPlanBundleDetails" \
                and context in ["create", "update"] \
                and cls.check_calculation(instance)
 
@@ -61,7 +58,6 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
             "PolicyHolderInsuree", "ContractDetails",
             "ContractContributionPlanDetails", "ContributionPlanBundle"
         ]
-        print("checking class_name ", class_name)
         if class_name == "ABCMeta":
             match = str(cls.uuid) == str(instance.uuid)
         elif class_name == "ContributionPlan":
@@ -85,42 +81,21 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
 
     @classmethod
     def calculate(cls, instance, **kwargs):
-        if instance.__class__.__name__ == "ContractContributionPlanDetails":
+        if instance.__class__.__name__ == "ContributionPlanBundleDetails":
             # check type of json_ext - in case of string - json.loads
-            cp_params, cd_params = instance.contribution_plan.json_ext, instance.contract_details.json_ext
-            ph_insuree = PolicyHolderInsuree.objects.filter(
-                insuree=instance.contract_details.insuree).first()
-            phi_params = ph_insuree.json_ext
+            print("JSON ", instance.contribution_plan.json_ext)
+            cp_params = instance.contribution_plan.json_ext
             if isinstance(cp_params, str):
                 cp_params = json.loads(cp_params)
-            if isinstance(cd_params, str):
-                cd_params = json.loads(cd_params)
-            if isinstance(phi_params, str):
-                phi_params = json.loads(phi_params)
             # check if json external calculation rule in instance exists
-            if cp_params:
-                cp_params = cp_params["calculation_rule"] if "calculation_rule" in cp_params else None
-            if cd_params:
-                cd_params = cd_params["calculation_rule"] if "calculation_rule" in cd_params else None
-            if phi_params:
-                phi_params = phi_params["calculation_rule"] if "calculation_rule" in phi_params else None
-            if "rate" in cp_params:
-                rate = int(cp_params["rate"])
-                if cd_params:
-                    if "income" in cd_params:
-                        income = float(cd_params["income"])
-                    elif "income" in phi_params:
-                        income = float(phi_params["income"])
-                    else:
-                        return False
-                elif "income" in phi_params:
-                    income = float(phi_params["income"])
-                else:
-                    return False
-                value = float(income) * (rate / 100)
-                return value
-            else:
-                return False
+            # if cp_params:
+            #     cp_params = cp_params["calculation_rule"] if "calculation_rule" in cp_params else None
+            #     if "rate" in cp_params:
+            #         rate = int(cp_params["rate"])
+            #         value = 200000
+            return 50000
+            # else:
+            #     return False
         else:
             return False
 

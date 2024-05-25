@@ -8,14 +8,11 @@ from core.abs_calculation_rule import AbsCalculationRule
 
 MODULE_NAME = "calculation_comores"
 DEFAULT_CFG = {}
-s
 
 def read_all_calculation_rules():
     """function to read all calculation rules from that module"""
-    print("OKkk....")
     for name, cls in inspect.getmembers(importlib.import_module("calculation_comores.calculation_rule"), inspect.isclass):
         if cls.__module__.split('.')[1] == 'calculation_rule':
-            print("OK....")
             CALCULATION_RULES.append(cls)
             cls.ready()
 
