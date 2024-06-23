@@ -4,6 +4,23 @@ CLASS_RULE_PARAM_VALIDATION = [
         "parameters": [
             {
                 "type": "number",
+                "name": "lumpsum",
+                "label": {
+                    "en": "Lump sum",
+                    "fr": "Montant forfaitaire"
+                },
+                "rights": {
+                    "read": "150201",
+                    "write": "150202",
+                    "update": "150203",
+                    "replace": "150206",
+                },
+                "relevance": "True",
+                # "condition": "INPUT>100",
+                "default": "0"
+            },
+            {
+                "type": "number",
                 "name": "childsum",
                 "label": {
                     "en": "Child sum",
@@ -53,23 +70,6 @@ CLASS_RULE_PARAM_VALIDATION = [
                 # "condition": "INPUT>100",
                 "default": "0"
             },
-            {
-                "type": "number",
-                "name": "lumpsum",
-                "label": {
-                    "en": "Lump sum",
-                    "fr": "Montant forfaitaire"
-                },
-                "rights": {
-                    "read": "150201",
-                    "write": "150202",
-                    "update": "150203",
-                    "replace": "150206",
-                },
-                "relevance": "True",
-                # "condition": "INPUT>100",
-                "default": "0"
-            }
         ],
     },
 ]
