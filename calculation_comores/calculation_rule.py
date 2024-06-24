@@ -7,7 +7,7 @@ from contribution_plan.models import ContributionPlanBundleDetails
 from core.signals import Signal
 from core import datetime
 from django.contrib.contenttypes.models import ContentType
-
+from insuree.models import Insuree
 
 class ContributionPlanCalculationRuleComores(AbsCalculationRule):
     version = 1
@@ -45,7 +45,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
 
     @classmethod
     def active_for_object(cls, instance, context, type='account_receivable', sub_type='contribution'):
-        return instance.__class__.__name__ == "ContributionPlanBundleDetails" \
+        return instance.__class__.__name__ == "ContributionPlan" \
                and context in ["create", "update"] \
                and cls.check_calculation(instance)
 
@@ -81,21 +81,52 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
 
     @classmethod
     def calculate(cls, instance, **kwargs):
-        if instance.__class__.__name__ == "ContributionPlanBundleDetails":
+        family = kwargs.get('family', None)
+        if instance.__class__.__name__ == "ContributionPlan":
             # check type of json_ext - in case of string - json.loads
-            print("JSON ", instance.contribution_plan.json_ext)
-            cp_params = instance.contribution_plan.json_ext
+            cp_params = instance.json_ext
             if isinstance(cp_params, str):
                 cp_params = json.loads(cp_params)
-            # check if json external calculation rule in instance exists
-            # if cp_params:
-            #     cp_params = cp_params["calculation_rule"] if "calculation_rule" in cp_params else None
-            #     if "rate" in cp_params:
-            #         rate = int(cp_params["rate"])
-            #         value = 200000
-            return 50000
-            # else:
-            #     return False
+            lumpsum = 0
+            childsum = 0
+            adultmalesum = 0
+            adultfemalesum = 0
+            if cp_params:
+                cp_params = cp_params["calculation_rule"] if "calculation_rule" in cp_params else None
+                if cp_params:
+                    if "lumpsum" in cp_params:
+                        lumpsum = int(cp_params["lumpsum"])
+                    if "childsum" in cp_params:
+                        childsum = int(cp_params["childsum"])
+                    if "adultmalesum" in cp_params:
+                        adultmalesum = int(cp_params["adultmalesum"])
+                    if "adultfemalesum" in cp_params:
+                        adultfemalesum = int(cp_params["adultfemalesum"])
+            amount = lumpsum
+            if family:
+                members = Insuree.objects.filter(
+                    family_id=family.id
+                )
+                for membre in members:
+                    if membre.relationship:
+                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
+                            # The member is not a son or daughter nor spouse. So hes a stranger
+                            date_format = "%Y-%m-%d"
+                            today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
+                            insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format)
+                            delta = today - insuree_dob
+                            age = int(round(delta.days / 365.0))
+                            if age < 21:
+                                # add amount for stranger child
+                                amount += childsum
+                            else:
+                                # its an adult
+                                if membre.gender:
+                                    if membre.gender.code in ["F", " F"]:
+                                        amount += adultfemalesum
+                                    else:
+                                        amount += adultmalesum
+            return amount
         else:
             return False
 
