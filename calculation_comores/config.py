@@ -70,6 +70,23 @@ CLASS_RULE_PARAM_VALIDATION = [
                 # "condition": "INPUT>100",
                 "default": "0"
             },
+            {
+                "type": "number",
+                "name": "fixedamount",
+                "label": {
+                    "en": "Fixed Amount",
+                    "fr": "Montant fixé"
+                },
+                "rights": {
+                    "read": "150201",
+                    "write": "150202",
+                    "update": "150203",
+                    "replace": "150206",
+                },
+                "relevance": "True",
+                # "condition": "INPUT>100",
+                "default": "0"
+            },
         ],
     },
 ]
