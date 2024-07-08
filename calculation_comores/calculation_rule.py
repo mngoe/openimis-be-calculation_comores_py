@@ -105,7 +105,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
             amount = lumpsum
             if family:
                 members = Insuree.objects.filter(
-                    family_id=family.id
+                    family_id=family.id, validity_to__isnull=True
                 )
                 for membre in members:
                     if membre.relationship:
