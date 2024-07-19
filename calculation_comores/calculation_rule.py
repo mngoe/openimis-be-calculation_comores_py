@@ -81,7 +81,9 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
 
     @classmethod
     def calculate(cls, instance, **kwargs):
+        print("cqlculating")
         family = kwargs.get('family', None)
+        print("family ", family)
         if instance.__class__.__name__ == "ContributionPlan":
             # check type of json_ext - in case of string - json.loads
             cp_params = instance.json_ext
