@@ -3,7 +3,7 @@ import inspect
 from django.apps import AppConfig
 from calculation.apps import CALCULATION_RULES
 
-from core.abs_calculation_rule import AbsCalculationRule
+from core.abs_calculation_rule import AbsStrategy
 
 
 MODULE_NAME = "calculation_comores"
@@ -15,7 +15,6 @@ def read_all_calculation_rules():
         if cls.__module__.split('.')[1] == 'calculation_rule':
             CALCULATION_RULES.append(cls)
             cls.ready()
-
 
 class CalcruleContributionComoresConfig(AppConfig):
     name = MODULE_NAME
