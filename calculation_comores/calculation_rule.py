@@ -1,6 +1,6 @@
 import json
 
-from .apps import AbsCalculationRule
+from .apps import AbsStrategy
 from .config import CLASS_RULE_PARAM_VALIDATION, \
     DESCRIPTION_CONTRIBUTION_VALUATION, FROM_TO
 from contribution_plan.models import ContributionPlanBundleDetails
@@ -9,7 +9,7 @@ from core import datetime
 from django.contrib.contenttypes.models import ContentType
 from insuree.models import Insuree
 
-class ContributionPlanCalculationRuleComores(AbsCalculationRule):
+class ContributionPlanCalculationRuleComores(AbsStrategy):
     version = 1
     uuid = "2e999dd4-04a0-2ba6-ac47-2a91cfa5e9b7"
     calculation_rule_name = "Contribution paamg"
@@ -22,26 +22,6 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
     type = "account_receivable"
     sub_type = "contribution"
 
-    signal_get_rule_name = Signal([])
-    signal_get_rule_details = Signal([])
-    signal_get_param = Signal([])
-    signal_get_linked_class = Signal([])
-    signal_calculate_event = Signal([])
-    signal_convert_from_to = Signal([])
-
-    @classmethod
-    def ready(cls):
-        now = datetime.datetime.now()
-        condition_is_valid = (now >= cls.date_valid_from and now <= cls.date_valid_to) \
-            if cls.date_valid_to else (now >= cls.date_valid_from and cls.date_valid_to is None)
-        if condition_is_valid:
-            if cls.status == "active":
-                # register signals getParameter to getParameter signal and getLinkedClass ot getLinkedClass signal
-                cls.signal_get_rule_name.connect(cls.get_rule_name, dispatch_uid="on_get_rule_name_signal")
-                cls.signal_get_rule_details.connect(cls.get_rule_details, dispatch_uid="on_get_rule_details_signal")
-                cls.signal_get_param.connect(cls.get_parameters, dispatch_uid="on_get_param_signal")
-                cls.signal_get_linked_class.connect(cls.get_linked_class, dispatch_uid="on_get_linked_class_signal")
-                cls.signal_calculate_event.connect(cls.run_calculation_rules, dispatch_uid="on_calculate_event_signal")
 
     @classmethod
     def active_for_object(cls, instance, context, type='account_receivable', sub_type='contribution'):
