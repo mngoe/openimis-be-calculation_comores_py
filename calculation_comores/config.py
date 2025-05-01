@@ -70,6 +70,74 @@ CLASS_RULE_PARAM_VALIDATION = [
                 # "condition": "INPUT>100",
                 "default": "0"
             },
+            {
+                "type": "number",
+                "name": "governmentlumpsum",
+                "label": {
+                    "en": "Government Lump sum",
+                    "fr": "Montant forfaitaire du gouvernement"
+                },
+                "rights": {
+                    "read": "150201",
+                    "write": "150202",
+                    "update": "150203",
+                    "replace": "150206",
+                },
+                "relevance": "True",
+                # "condition": "INPUT>100",
+                "default": "0"
+            },
+            {
+                "type": "number",
+                "name": "governmentchildsum",
+                "label": {
+                    "en": "Government Child sum",
+                    "fr": "Montant du gouvernement pour enfant"
+                },
+                "rights": {
+                    "read": "150201",
+                    "write": "150202",
+                    "update": "150203",
+                    "replace": "150206",
+                },
+                "relevance": "True",
+                # "condition": "INPUT>100",
+                "default": "0"
+            },
+            {
+                "type": "number",
+                "name": "governmentadultmalesum",
+                "label": {
+                    "en": "Government Amount for adult man",
+                    "fr": "Montant du gouvernement pour homme adulte"
+                },
+                "rights": {
+                    "read": "150201",
+                    "write": "150202",
+                    "update": "150203",
+                    "replace": "150206",
+                },
+                "relevance": "True",
+                # "condition": "INPUT>100",
+                "default": "0"
+            },
+            {
+                "type": "number",
+                "name": "governmentadultfemalesum",
+                "label": {
+                    "en": "Government Amount for adult woman",
+                    "fr": "Montant du gouvernement pour femme adulte"
+                },
+                "rights": {
+                    "read": "150201",
+                    "write": "150202",
+                    "update": "150203",
+                    "replace": "150206",
+                },
+                "relevance": "True",
+                # "condition": "INPUT>100",
+                "default": "0"
+            },
         ],
     },
 ]
