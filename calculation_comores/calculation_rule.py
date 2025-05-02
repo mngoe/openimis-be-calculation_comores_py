@@ -1,5 +1,5 @@
 import json
-
+import logging
 from .apps import AbsCalculationRule
 from .config import CLASS_RULE_PARAM_VALIDATION, \
     DESCRIPTION_CONTRIBUTION_VALUATION, FROM_TO
@@ -8,6 +8,8 @@ from core.signals import Signal
 from core import datetime
 from django.contrib.contenttypes.models import ContentType
 from insuree.models import Insuree
+
+logger = logging.getLogger(__name__)
 
 class ContributionPlanCalculationRuleComores(AbsCalculationRule):
     version = 1
@@ -81,14 +83,56 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
 
     @classmethod
     def calculate(cls, instance, **kwargs):
-        print("cqlculating")
+        logger.warning("Processing calculation rules...")
         family = kwargs.get('family', None)
-        print("family ", family)
+        is_government_value = kwargs.get('is_government_value', None)
         if instance.__class__.__name__ == "ContributionPlan":
             # check type of json_ext - in case of string - json.loads
             cp_params = instance.json_ext
             if isinstance(cp_params, str):
                 cp_params = json.loads(cp_params)
+            if is_government_value:
+                government_lumpsum = 0
+                government_childsum = 0
+                government_adultmalesum = 0
+                government_adultfemalesum = 0
+                if cp_params:
+                    cp_params = cp_params["calculation_rule"] if "calculation_rule" in cp_params else None
+                    if cp_params:
+                        logger.warning("cp_params: %s ", cp_params)
+                        if "governmentlumpsum" in cp_params:
+                            government_lumpsum = int(cp_params["governmentlumpsum"])
+                        if "governmentchildsum" in cp_params:
+                            government_childsum = int(cp_params["governmentchildsum"])
+                        if "governmentadultmalesum" in cp_params:
+                            government_adultmalesum = int(cp_params["governmentadultmalesum"])
+                        if "governmentadultfemalesum" in cp_params:
+                            government_adultfemalesum = int(cp_params["governmentadultfemalesum"])
+                governement_amount = government_lumpsum
+                if family:
+                    members = Insuree.objects.filter(
+                        family_id=family.id, validity_to__isnull=True
+                    )
+                    for membre in members:
+                        if membre.relationship:
+                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
+                                # The member is not a son or daughter nor spouse. So hes a stranger
+                                date_format = "%Y-%m-%d"
+                                today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
+                                insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format)
+                                delta = today - insuree_dob
+                                age = int(round(delta.days / 365.0))
+                                if age < 21:
+                                    # add governement_amount for stranger child
+                                    governement_amount += government_childsum
+                                else:
+                                    # its an adult
+                                    if membre.gender:
+                                        if membre.gender.code in ["F", " F"]:
+                                            governement_amount += government_adultfemalesum
+                                        else:
+                                            governement_amount += government_adultmalesum
+                return governement_amount
             lumpsum = 0
             childsum = 0
             adultmalesum = 0
