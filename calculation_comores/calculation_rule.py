@@ -112,10 +112,10 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                 if family:
                     members = Insuree.objects.filter(
                         family_id=family.id, validity_to__isnull=True
-                    )
+                    ).exclude(id=family.id)
                     for membre in members:
                         if membre.relationship:
-                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
+                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "Époux/Epouse", "son/daughter", "fils/fille"]:
                                 # The member is not a son or daughter nor spouse. So hes a stranger
                                 date_format = "%Y-%m-%d"
                                 today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
@@ -152,10 +152,10 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
             if family:
                 members = Insuree.objects.filter(
                     family_id=family.id, validity_to__isnull=True
-                )
+                ).exclude(id=family.id)
                 for membre in members:
                     if membre.relationship:
-                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
+                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "Époux/Epouse", "son/daughter", "fils/fille"]:
                             # The member is not a son or daughter nor spouse. So hes a stranger
                             date_format = "%Y-%m-%d"
                             today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
