@@ -112,7 +112,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                 if family:
                     members = Insuree.objects.filter(
                         family_id=family.id, validity_to__isnull=True
-                    )
+                    ).exclude(id=family.id)
                     for membre in members:
                         if membre.relationship:
                             if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
@@ -152,7 +152,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
             if family:
                 members = Insuree.objects.filter(
                     family_id=family.id, validity_to__isnull=True
-                )
+                ).exclude(id=family.id)
                 for membre in members:
                     if membre.relationship:
                         if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
