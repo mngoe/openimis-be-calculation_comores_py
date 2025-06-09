@@ -118,7 +118,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                     ).exclude(id=head_id)
                     for membre in members:
                         if membre.relationship:
-                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "Époux/Epouse", "Head of family", "Chef de ménage", "son/daughter", "fils/fille"]:
+                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "époux/epouse", "head of family", "chef de ménage", "son/daughter", "fils/fille"]:
                                 # The member is not a son or daughter nor spouse. So hes a stranger
                                 date_format = "%Y-%m-%d"
                                 today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
@@ -162,7 +162,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                 for membre in members:
                     if membre.relationship:
                         print(str(membre.relationship.relation).lower())
-                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "Époux/Epouse", "Head of family", "Chef de ménage", "son/daughter", "fils/fille"]:
+                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "époux/epouse", "head of family", "chef de ménage", "son/daughter", "fils/fille"]:
                             # The member is not a son or daughter nor spouse. So hes a stranger
                             print("OK....", membre)
                             date_format = "%Y-%m-%d"
