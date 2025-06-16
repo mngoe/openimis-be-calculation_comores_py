@@ -110,12 +110,17 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                             government_adultfemalesum = int(cp_params["governmentadultfemalesum"])
                 governement_amount = government_lumpsum
                 if family:
+                    head_id = 0
+                    if family.head_insuree:
+                        head_id = family.head_insuree.id
                     members = Insuree.objects.filter(
                         family_id=family.id, validity_to__isnull=True
-                    )
+                    ).exclude(id=head_id)
                     for membre in members:
+                        print("Relation ", membre.relationship.relation)
                         if membre.relationship:
-                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
+                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "époux/epouse", "head of family", "chef de ménage", "son/daughter", "fils/fille"]:
+                                print("Ok pour ", membre.relationship.relation)
                                 # The member is not a son or daughter nor spouse. So hes a stranger
                                 date_format = "%Y-%m-%d"
                                 today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
@@ -150,12 +155,17 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                         adultfemalesum = int(cp_params["adultfemalesum"])
             amount = lumpsum
             if family:
+                head_id = 0
+                if family.head_insuree:
+                    head_id = family.head_insuree.id
                 members = Insuree.objects.filter(
                     family_id=family.id, validity_to__isnull=True
-                )
+                ).exclude(id=head_id)
                 for membre in members:
+                    print("Relation ", membre.relationship.relation)
                     if membre.relationship:
-                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "son/daughter", "fils/fille"]:
+                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "époux/epouse", "head of family", "chef de ménage", "son/daughter", "fils/fille"]:
+                            print("Ok pour ", membre.relationship.relation)
                             # The member is not a son or daughter nor spouse. So hes a stranger
                             date_format = "%Y-%m-%d"
                             today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
