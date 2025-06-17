@@ -172,15 +172,20 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                             insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format)
                             delta = today - insuree_dob
                             age = int(round(delta.days / 365.0))
+                            print("age ", age)
                             if age < 21:
                                 # add amount for stranger child
                                 amount += childsum
                             else:
                                 # its an adult
+                                print("Genre ", membre.gender)
                                 if membre.gender:
+                                    print("code ", membre.gender.code)
                                     if membre.gender.code in ["F", " F"]:
+                                        print("adultfemalesum ", adultfemalesum)
                                         amount += adultfemalesum
                                     else:
+                                        print("adultmalesum ", adultmalesum)
                                         amount += adultmalesum
             return amount
         else:
