@@ -154,6 +154,10 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                     if "adultfemalesum" in cp_params:
                         adultfemalesum = int(cp_params["adultfemalesum"])
             amount = lumpsum
+            print("childsum ", childsum)
+            print("lumpsum ", lumpsum)
+            print("adultmalesum ", adultmalesum)
+            print("adultfemalesum ", adultfemalesum)
             if family:
                 head_id = 0
                 if family.head_insuree:
@@ -175,7 +179,9 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                             print("age ", age)
                             if age < 21:
                                 # add amount for stranger child
+                                print("befor ", amount)
                                 amount += childsum
+                                print("after ", amount)
                             else:
                                 # its an adult
                                 print("Genre ", membre.gender)
