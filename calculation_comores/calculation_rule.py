@@ -8,6 +8,8 @@ from core.signals import Signal
 from core import datetime
 from django.contrib.contenttypes.models import ContentType
 from insuree.models import Insuree
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 logger = logging.getLogger(__name__)
 
@@ -117,16 +119,20 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                         family_id=family.id, validity_to__isnull=True
                     ).exclude(id=head_id)
                     for membre in members:
-                        print("Relation ", membre.relationship.relation)
+                        print("Relation ", membre.relationship)
                         if membre.relationship:
-                            if str(membre.relationship.relation).lower() not in ["spouse", "époux", "époux/epouse", "head of family", "chef de ménage", "son/daughter", "fils/fille"]:
-                                print("Ok pour ", membre.relationship.relation)
+                            # head of family = 1
+                            # spouse/epoux = 2
+                            # son/daughter = 3
+                            if membre.relationship.id not in [1, 2, 3]:
+                                print("Ok pour la relation", membre.relationship.relation)
                                 # The member is not a son or daughter nor spouse. So hes a stranger
                                 date_format = "%Y-%m-%d"
-                                today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
-                                insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format)
-                                delta = today - insuree_dob
-                                age = int(round(delta.days / 365.0))
+                                today = date.today()
+                                insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format).date()
+                                delta = relativedelta(today, insuree_dob)
+                                print ("Age ", delta.years, " Mois: ", delta.months, " Jour: ", delta.days)
+                                age = delta.years
                                 if age < 21:
                                     # add governement_amount for stranger child
                                     governement_amount += government_childsum
@@ -154,6 +160,10 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                     if "adultfemalesum" in cp_params:
                         adultfemalesum = int(cp_params["adultfemalesum"])
             amount = lumpsum
+            print("childsum ", childsum)
+            print("lumpsum ", lumpsum)
+            print("adultmalesum ", adultmalesum)
+            print("adultfemalesum ", adultfemalesum)
             if family:
                 head_id = 0
                 if family.head_insuree:
@@ -162,25 +172,33 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                     family_id=family.id, validity_to__isnull=True
                 ).exclude(id=head_id)
                 for membre in members:
-                    print("Relation ", membre.relationship.relation)
+                    print("Relation ", membre.relationship)
                     if membre.relationship:
-                        if str(membre.relationship.relation).lower() not in ["spouse", "époux", "époux/epouse", "head of family", "chef de ménage", "son/daughter", "fils/fille"]:
-                            print("Ok pour ", membre.relationship.relation)
+                        # head of family = 1
+                        # spouse/epoux = 2
+                        # son/daughter = 3
+                        if membre.relationship.id not in [1, 2, 3]:
+                            print("Ok pour la relation", membre.relationship.relation)
                             # The member is not a son or daughter nor spouse. So hes a stranger
                             date_format = "%Y-%m-%d"
-                            today = datetime.datetime.strptime(str(datetime.datetime.now().date()), date_format)
-                            insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format)
-                            delta = today - insuree_dob
-                            age = int(round(delta.days / 365.0))
+                            today = date.today()
+                            insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format).date()
+                            delta = relativedelta(today, insuree_dob)
+                            print ("Age ", delta.years, " Mois: ", delta.months, " Jour: ", delta.days)
+                            age = delta.years
                             if age < 21:
                                 # add amount for stranger child
                                 amount += childsum
                             else:
                                 # its an adult
+                                print("Genre ", membre.gender)
                                 if membre.gender:
+                                    print("code ", membre.gender.code)
                                     if membre.gender.code in ["F", " F"]:
+                                        print("adultfemalesum ", adultfemalesum)
                                         amount += adultfemalesum
                                     else:
+                                        print("adultmalesum ", adultmalesum)
                                         amount += adultmalesum
             return amount
         else:
