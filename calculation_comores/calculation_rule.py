@@ -132,7 +132,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                                 insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format).date()
                                 delta = relativedelta(today, insuree_dob)
                                 print ("Age ", delta.years, " Mois: ", delta.months, " Jour: ", delta.days)
-                                age = delta.year
+                                age = delta.years
                                 if age < 21:
                                     # add governement_amount for stranger child
                                     governement_amount += government_childsum
@@ -185,7 +185,7 @@ class ContributionPlanCalculationRuleComores(AbsCalculationRule):
                             insuree_dob = datetime.datetime.strptime(str(membre.dob), date_format).date()
                             delta = relativedelta(today, insuree_dob)
                             print ("Age ", delta.years, " Mois: ", delta.months, " Jour: ", delta.days)
-                            age = delta.year
+                            age = delta.years
                             if age < 21:
                                 # add amount for stranger child
                                 amount += childsum
