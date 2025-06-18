@@ -12,9 +12,11 @@ DEFAULT_CFG = {}
 def read_all_calculation_rules():
     """function to read all calculation rules from that module"""
     for name, cls in inspect.getmembers(importlib.import_module("calculation_comores.calculation_rule"), inspect.isclass):
-        if cls.__module__.split('.')[1] == 'calculation_rule':
-            CALCULATION_RULES.append(cls)
-            cls.ready()
+        print("cls.__module__ ", cls.__module__)
+        if "." in cls.__module__:
+            if cls.__module__.split('.')[1] == 'calculation_rule':
+                CALCULATION_RULES.append(cls)
+                cls.ready()
 
 
 class CalcruleContributionComoresConfig(AppConfig):
